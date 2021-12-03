@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CameraActivity">
+    <androidx.camera.view.PreviewView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/preview"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clipToOutline="true"
+        android:id="@+id/capture"
+        android:src="@android:drawable/ic_menu_camera"
+        app:layout_constraintLeft_toRightOf="@id/record"
+        app:layout_constraintRight_toLeftOf="@id/Photos"
+        app:layout_constraintBottom_toBottomOf="@id/preview"
+        app:layout_constraintTop_toTopOf="@id/buttonPanel"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clipToOutline="true"
+        android:id="@+id/record"
+        android:src="@android:drawable/ic_menu_compass"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/capture"
+        app:layout_constraintBottom_toBottomOf="@id/preview"
+        app:layout_constraintTop_toTopOf="@id/buttonPanel"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clipToOutline="true"
+        android:id="@+id/Photos"
+        android:src="@android:drawable/ic_menu_gallery"
+        app:layout_constraintLeft_toRightOf="@id/capture"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/preview"
+        app:layout_constraintTop_toTopOf="@id/buttonPanel"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/buttonPanel"
+        app:layout_constraintGuide_end="150dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
