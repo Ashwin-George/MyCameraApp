@@ -15,9 +15,11 @@ import androidx.core.content.PackageManagerCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.LifecycleOwner;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.GnssAntennaInfo;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
@@ -39,6 +41,7 @@ public class CameraActivity extends AppCompatActivity {
     PreviewView mPreviewView;
     ListenableFuture<ProcessCameraProvider> mCameraProviderFuture;
     ImageCapture mImageCapture;
+    static private final String EXTRA_URI="Extra Uri";
     private static final int REQUEST_CODE_PERMISSION = 101;
     private static final String[] requiredPermissions={"android.permission.CAMERA",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -111,14 +114,17 @@ public class CameraActivity extends AppCompatActivity {
         CameraSelector cameraSelector=new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK  )
                 .build();
+
 //        Preview Use Case
         Preview preview=new Preview.Builder().build();
         preview.setSurfaceProvider(mPreviewView.getSurfaceProvider());
+
 //        Image Use Case
         mImageCapture=new ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .setTargetRotation(mPreviewView.getDisplay().getRotation())
                 .build();
+
         cameraProvider.bindToLifecycle((LifecycleOwner) this,cameraSelector,preview,mImageCapture);
     }
     public boolean allPermisionsGranted(){
@@ -133,30 +139,18 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void capturePhoto(){
-        File photoDir=new File("/storage/emulated/0/AndroidStorageDirectory/Photos/CameraX");
-        if(!photoDir.exists())
-            photoDir.mkdir();
         Date date=new Date();
 
-        File filePath;
         String Timestamp=String.valueOf(date.getTime());
-
+//PhotoFilepath is working in emulator and saves image in DCIM in external Storage
         String photoFilePath=
-//                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-//                Environment.getExternalStorageDirectory()
-//                        +"/"+"CameraX-"+
                 outputDir.getAbsolutePath()+
                                "/" +Timestamp+".jpg";
+//getFilesDir can be used to store in Internal storage and is working on Android phone and Emulator alike
+        File photoFile=
+//                new File(photoFilePath)
+                new File(this.getFilesDir(),Timestamp);;
 
-        File photoFile=new File(photoFilePath);
-
-//        File photoDir=new File(Environment.getExternalStorageDirectory()+"/Photos/CameraX");
-//        if(!photoDir.exists())
-//            photoDir.mkdir();
-//        Date date=new Date();
-//        String Timestamp=String.valueOf(date.getTime());
-//        String photoFilePath=photoDir.getAbsolutePath()+"/"+"CameraX-"+Timestamp+".jpg";
-//        File photoFile=new File(photoFilePath);
 
 
         mImageCapture.takePicture(new ImageCapture.OutputFileOptions.Builder(photoFile).build(),
@@ -165,6 +159,12 @@ public class CameraActivity extends AppCompatActivity {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         Toast.makeText(CameraActivity.this,"Image saved",Toast.LENGTH_SHORT).show();
+                        Uri savedUri=Uri.parse(photoFile.getAbsolutePath());
+
+                        Intent galleryActivityIntent=new Intent(CameraActivity.this,GalleryActivity.class);
+                        galleryActivityIntent.putExtra(EXTRA_URI,savedUri.toString());
+                        startActivity(galleryActivityIntent);
+
 
                     }
 
@@ -174,9 +174,9 @@ public class CameraActivity extends AppCompatActivity {
                         Log.e(CameraActivity.class.getSimpleName(),exception.getMessage());
 
                     }
-//                    public void onCaptureSuccess
                 });
 
 
     }
+
 }
