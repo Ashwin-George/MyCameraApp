@@ -2,10 +2,13 @@ package com.example.android.mycamera;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.AspectRatio;
 import androidx.camera.core.CameraProvider;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -36,17 +39,22 @@ import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-public class CameraActivity extends AppCompatActivity {
+
+public class CameraActivity extends AppCompatActivity implements ImageAnalysis.Analyzer{
     FloatingActionButton mCaptureButton;
     PreviewView mPreviewView;
     ListenableFuture<ProcessCameraProvider> mCameraProviderFuture;
     ImageCapture mImageCapture;
+    ImageAnalysis mImageAnalysis;
+    private int rotationDegree;
+    static private final String EXTRA_ROTATION="Extra Rotation";
     static private final String EXTRA_URI="Extra Uri";
     private static final int REQUEST_CODE_PERMISSION = 101;
     private static final String[] requiredPermissions={"android.permission.CAMERA",
             "android.permission.WRITE_EXTERNAL_STORAGE",
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.MANAGE_EXTERNAL_STORAGE"};
+
     private  static File outputDir;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,9 +131,13 @@ public class CameraActivity extends AppCompatActivity {
         mImageCapture=new ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .setTargetRotation(mPreviewView.getDisplay().getRotation())
+                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .build();
 
-        cameraProvider.bindToLifecycle((LifecycleOwner) this,cameraSelector,preview,mImageCapture);
+        mImageAnalysis=new ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build();
+        cameraProvider.bindToLifecycle((LifecycleOwner) this,cameraSelector,preview,mImageCapture,mImageAnalysis);
     }
     public boolean allPermisionsGranted(){
         for(String permission: requiredPermissions){
@@ -149,7 +161,7 @@ public class CameraActivity extends AppCompatActivity {
 //getFilesDir can be used to store in Internal storage and is working on Android phone and Emulator alike
         File photoFile=
 //                new File(photoFilePath)
-                new File(this.getFilesDir(),Timestamp);;
+                new File(this.getFilesDir(),Timestamp);
 
 
 
@@ -163,9 +175,8 @@ public class CameraActivity extends AppCompatActivity {
 
                         Intent galleryActivityIntent=new Intent(CameraActivity.this,GalleryActivity.class);
                         galleryActivityIntent.putExtra(EXTRA_URI,savedUri.toString());
+                        galleryActivityIntent.putExtra(EXTRA_ROTATION,rotationDegree);
                         startActivity(galleryActivityIntent);
-
-
                     }
 
                     @Override
@@ -179,4 +190,10 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void analyze(@NonNull ImageProxy image) {
+        rotationDegree=image.getImageInfo().getRotationDegrees();
+        Log.v(CameraActivity.class.getSimpleName(),"Rotation degree : "+rotationDegree);
+        image.close();
+    }
 }

@@ -3,9 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/ashwi/OneDrive/Documents/MyCamera/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.23703703703703705" />
+        <entry key="..\:/Users/ashwi/OneDrive/Documents/MyCamera/app/src/main/res/drawable/ic_launcher_background.xml" value="0.24351851851851852" />
         <entry key="..\:/Users/ashwi/OneDrive/Documents/MyCamera/app/src/main/res/layout/activity_camera.xml" value="0.2" />
         <entry key="..\:/Users/ashwi/OneDrive/Documents/MyCamera/app/src/main/res/layout/activity_gallery.xml" value="0.152" />
         <entry key="..\:/Users/ashwi/OneDrive/Documents/MyCamera/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/ashwi/OneDrive/Documents/MyCamera/app/src/main/res/layout/fragment_text_recognized.xml" value="0.25885416666666666" />
       </map>
     </option>
   </component>
